@@ -30,8 +30,7 @@ export default function HistoryPage() {
             <h1 className="text-3xl font-black mb-8 flex items-center gap-3">
                 Order History
             </h1>
-
-            {/* Форма пошуку */}
+            
             <form onSubmit={fetchHistory} className="mb-10 flex gap-2">
                 <div className="relative flex-1">                    
                     <input
@@ -51,13 +50,11 @@ export default function HistoryPage() {
                     {loading ? 'Searching...' : 'Search'}
                 </button>
             </form>
-
-            {/* Список замовлень */}
+           
             <div className="space-y-6">
                 {orders.length > 0 ? (
                     orders.map((order) => (
-                        <div key={order.id} className="border-2 rounded-2xl overflow-hidden bg-white shadow-sm">
-                            {/* Хедер замовлення */}
+                        <div key={order.id} className="border-2 rounded-2xl overflow-hidden bg-white shadow-sm">                            
                             <div className="bg-gray-50 p-4 border-b flex flex-wrap justify-between items-center gap-4">
                                 <div className="flex gap-6 text-sm">
                                     <div>
@@ -76,8 +73,7 @@ export default function HistoryPage() {
                                     <p className="text-xl font-black text-blue-600">${order.totalPrice.toFixed(2)}</p>
                                 </div>
                             </div>
-
-                            {/* Деталі замовлення */}
+                            
                             <div className="p-4">
                                 <div className="flex items-start gap-2 text-gray-600 text-sm mb-4">                                    
                                     <span>{order.address}</span>

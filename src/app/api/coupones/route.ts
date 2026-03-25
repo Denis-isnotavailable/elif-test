@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const coupons = await prisma.coupon.findMany();
+        const coupones = await prisma.coupon.findMany();
 
-        return NextResponse.json(coupons, {status: 200});
+        return NextResponse.json(coupones);
     } catch (error) {
         return NextResponse.json(error, {status: 500});
     }  

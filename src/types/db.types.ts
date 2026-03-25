@@ -40,3 +40,13 @@ export type OrderWithItems = {
     totalPrice: number;
     items: OrderItemExtended[];
 }
+
+export type Coupon = {
+    id: number;
+    createdAt: Date;
+    updatedAt: Date;
+    name: string;
+    code: number;
+    discount: number;
+};
+

@@ -4,16 +4,17 @@ import { useEffect, useState } from 'react';
 import { updateQuantity, removeFromCart, getCart, CartItem } from '@/utils/cart-utils';
 import Bounded from '@/_components/Bounded';
 import Image from 'next/image';
+import { Coupon } from '@/types/db.types';
 
 export default function CartPage() {
-    // const cart = getCart();
     const [cart, setCart] = useState<CartItem[]>([]);
     const [quantityChanges, setQuantityChanges] = useState(true);
-    const [coupon, setCoupon] = useState('');
+    const [coupones, setCoupones] = useState<Coupon[]>([]);
+    const [couponCode, setCouponCode] = useState('');
     const [discount, setDiscount] = useState(0);
 
     const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const total = subtotal * (1 - discount / 100);
+    const total = subtotal - discount;
 
     useEffect(() => {
         if (quantityChanges) {
@@ -24,11 +25,34 @@ export default function CartPage() {
         }        
     }, [quantityChanges])
 
-    // const handleApplyCoupon = async () => {
-    //     // Тут буде логіка перевірки купона в БД
-    //     if (coupon === 'FREE10') setDiscount(10);
-    //     else alert('Invalid coupon');
-    // };
+    useEffect(() => {
+        const fetchCoupones = async () => {
+            try {
+                const res = await fetch(`/api/coupones`);
+                const data = await res.json();
+                setCoupones(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchCoupones();
+    }, [])
+
+    const handleApplyCoupon = async () => {
+        let isFound = false;
+
+        coupones.forEach(({ code, discount }) => {
+            if (code === Number(couponCode)) {
+                setDiscount(discount)
+                isFound = true
+            }
+        })
+        
+        if (!isFound) {
+            alert('Invalid coupon')
+            setDiscount(0)
+        };
+    };
 
     const handleQuantityChanges = (id: number, quantity: number) => {
         updateQuantity(id, quantity)
@@ -132,10 +156,10 @@ export default function CartPage() {
                     </div>
                     
                     <div className="border-t pt-6 space-y-4">
-                        {/* <div className="flex gap-2">
+                        <div className="flex gap-2">
                             <input
-                                value={coupon}
-                                onChange={(e) => setCoupon(e.target.value)}
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value)}
                                 placeholder="Coupon code"
                                 className="flex-1 p-2 border rounded-lg text-sm"
                             />
@@ -145,7 +169,7 @@ export default function CartPage() {
                             >
                                 Apply
                             </button>
-                        </div> */}
+                        </div>
 
                         <div className="space-y-2 text-lg">
                             <div className="flex justify-between text-gray-600">
@@ -154,8 +178,8 @@ export default function CartPage() {
                             </div>
                             {discount > 0 && (
                                 <div className="flex justify-between text-green-600 text-sm">
-                                    <span>Discount ({discount}%):</span>
-                                    <span>-${(subtotal * discount / 100).toFixed(2)}</span>
+                                    <span>Discount:</span>
+                                    <span>-${(discount)}</span>
                                 </div>
                             )}
                             <div className="flex justify-between font-black text-2xl border-t pt-2">
